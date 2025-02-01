@@ -3,18 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vigenère Cipher</title>
+    <title>Cipher Encryption</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Vigenère Cipher Encryption</h1>
+        <h1>Cipher Encryption</h1>
         <form method="POST">
             <label for="plaintext">Plaintext:</label>
             <input type="text" id="plaintext" name="plaintext" value="{{ plaintext }}" required>
             
-            <label for="key">Key:</label>
-            <input type="text" id="key" name="key" value="{{ key }}" required>
+            <label for="cipher_type">Choose Cipher:</label>
+            <select id="cipher_type" name="cipher_type">
+                <option value="vigenere">Vigenère Cipher</option>
+                <option value="rail_fence">Rail Fence Cipher</option>
+            </select>
+            
+            <div id="key_input">
+                <label for="key">Key (for Vigenère):</label>
+                <input type="text" id="key" name="key">
+            </div>
             
             <button type="submit">Encrypt</button>
         </form>
@@ -32,5 +40,12 @@
         </div>
         {% endif %}
     </div>
+
+    <script>
+        document.getElementById('cipher_type').addEventListener('change', function() {
+            var keyInput = document.getElementById('key_input');
+            keyInput.style.display = this.value === 'vigenere' ? 'block' : 'none';
+        });
+    </script>
 </body>
 </html>
