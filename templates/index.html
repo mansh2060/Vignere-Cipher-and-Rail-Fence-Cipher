@@ -8,29 +8,52 @@
 </head>
 <body>
     <div class="container">
-        <h1>Cipher Encryption</h1>
+        <h1>Cipher Encryption & Decryption</h1>
         <form method="POST">
             <label for="plaintext">Plaintext:</label>
             <input type="text" id="plaintext" name="plaintext" value="{{ plaintext }}" required>
             
             <label for="cipher_type">Choose Cipher:</label>
             <select id="cipher_type" name="cipher_type">
-                <option value="vigenere">Vigenère Cipher</option>
-                <option value="rail_fence">Rail Fence Cipher</option>
+                <option value="vigenere" {% if request.form.get('cipher_type') == 'vigenere' %}selected{% endif %}>Vigenère Cipher</option>
+                <option value="rail_fence" {% if request.form.get('cipher_type') == 'rail_fence' %}selected{% endif %}>Rail Fence Cipher</option>
             </select>
             
+            <!-- Key input for Vigenère Cipher -->
             <div id="key_input">
                 <label for="key">Key (for Vigenère):</label>
-                <input type="text" id="key" name="key">
+                <input type="text" id="key" name="key" value="{{ key }}">
+            </div>
+
+            <!-- Rail size input for Rail Fence Cipher -->
+            <div id="rail_size_input" style="display: none;">
+                <label for="rail_size">Rail Size (for Rail Fence):</label>
+                <input type="number" id="rail_size" name="rail_size" min="2">
             </div>
             
-            <button type="submit">Encrypt</button>
+            <button type="submit" name="encrypt">Encrypt</button>
         </form>
 
         {% if result %}
         <div class="result">
             <h2>Encrypted Text:</h2>
             <p>{{ result }}</p>
+
+            <!-- Decryption Form -->
+            <form method="POST">
+                <input type="hidden" name="ciphertext" value="{{ result }}">
+                <input type="hidden" name="cipher_type" value="{{ request.form.get('cipher_type', 'vigenere') }}">
+                <input type="hidden" name="key" value="{{ key }}">
+                <input type="hidden" name="rail_size" value="{{ request.form.get('rail_size', '') }}">
+                <button type="submit" name="decrypt">Decrypt</button>
+            </form>
+        </div>
+        {% endif %}
+
+        {% if decrypted %}
+        <div class="result">
+            <h2>Decrypted Text:</h2>
+            <p>{{ decrypted }}</p>
         </div>
         {% endif %}
 
@@ -44,8 +67,22 @@
     <script>
         document.getElementById('cipher_type').addEventListener('change', function() {
             var keyInput = document.getElementById('key_input');
-            keyInput.style.display = this.value === 'vigenere' ? 'block' : 'none';
+            var railSizeInput = document.getElementById('rail_size_input');
+
+            if (this.value === 'vigenere') {
+                keyInput.style.display = 'block';
+                railSizeInput.style.display = 'none';
+            } else {
+                keyInput.style.display = 'none';
+                railSizeInput.style.display = 'block';
+            }
         });
+
+        window.onload = function() {
+            var cipherType = document.getElementById('cipher_type').value;
+            document.getElementById('key_input').style.display = (cipherType === 'vigenere') ? 'block' : 'none';
+            document.getElementById('rail_size_input').style.display = (cipherType === 'rail_fence') ? 'block' : 'none';
+        };
     </script>
 </body>
 </html>
